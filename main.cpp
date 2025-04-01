@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
             }
             if (event.type == SDL_KEYDOWN) {
                 char letter = event.key.keysym.sym;
-                if (letter >= 'a' && letter <= 'z') letter -= 32; // Chuyển thành chữ hoa
+                if (letter >= 'a' && letter <= 'z') letter -= 32;
                 if (letter >= 'A' && letter <= 'Z') {
                     game.guessLetter(letter);
                 }
