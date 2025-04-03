@@ -47,6 +47,9 @@ int main(int argc, char* argv[]) {
             } else {
                 graphics.renderText("You lose! The word was: " + game.secretWord, 100, 250, textColor);
             }
+             SDL_RenderPresent(graphics.renderer);
+        SDL_Delay(5000);  
+        quit = true;      
         }
 
         SDL_RenderPresent(graphics.renderer);
