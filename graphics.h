@@ -1,12 +1,14 @@
 #ifndef _GRAPHICS_H
 #define _GRAPHICS_H
-
+using namespace std;
 #include "defs.h"
+#include <SDL_image.h>
 
 struct Graphics {
     SDL_Window* window;
     SDL_Renderer* renderer;
     TTF_Font* font;
+    SDL_Texture* hangmanStages[7];
 
     void init() {
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -27,9 +29,14 @@ struct Graphics {
         if (font == nullptr) {
             logErrorAndExit("TTF_OpenFont", TTF_GetError());
         }
+
+
+        if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+            logErrorAndExit("IMG_Init", IMG_GetError());
+        }
     }
 
-    void renderText(const std::string& text, int x, int y, SDL_Color color) {
+    void renderText(const string& text, int x, int y, SDL_Color color) {
         SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(), color);
         SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_Rect dest = {x, y, surface->w, surface->h};
@@ -38,10 +45,34 @@ struct Graphics {
         SDL_DestroyTexture(texture);
     }
 
+    void loadHangmanStages() {
+        for (int i = 0; i < 7; i++) {
+            string path = "assets/hangman_" + to_string(i) + ".png";
+            SDL_Surface* surface = IMG_Load(path.c_str());
+            if (!surface) {
+                logErrorAndExit("IMG_Load", IMG_GetError());
+            }
+            hangmanStages[i] = SDL_CreateTextureFromSurface(renderer, surface);
+            SDL_FreeSurface(surface);
+        }
+    }
+
+    void renderHangman(int stage) {
+        if (stage < 0 || stage >= 7) return;
+        SDL_Rect dest = {100, 300, 600, 388};
+        SDL_RenderCopy(renderer, hangmanStages[stage], nullptr, &dest);
+    }
+
     void quit() {
+        for (int i = 0; i < 7; i++) {
+            if (hangmanStages[i]) {
+                SDL_DestroyTexture(hangmanStages[i]);
+            }
+        }
         TTF_CloseFont(font);
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
+        IMG_Quit();
         TTF_Quit();
         SDL_Quit();
     }
