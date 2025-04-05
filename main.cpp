@@ -1,9 +1,11 @@
 #include "graphics.h"
 #include "logic.h"
+using namespace std;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     Graphics graphics;
     graphics.init();
+    graphics.loadHangmanStages();
 
     Hangman game;
     game.init();
@@ -16,6 +18,7 @@ int main(int argc, char* argv[]) {
             if (event.type == SDL_QUIT) {
                 quit = true;
             }
+
             if (event.type == SDL_KEYDOWN) {
                 char letter = event.key.keysym.sym;
                 if (letter >= 'a' && letter <= 'z') letter -= 32;
@@ -25,19 +28,18 @@ int main(int argc, char* argv[]) {
             }
         }
 
-
         SDL_SetRenderDrawColor(graphics.renderer, 255, 255, 255, 255);
         SDL_RenderClear(graphics.renderer);
 
 
-        SDL_Color textColor = {0, 0, 0, 255};
+        graphics.renderHangman(game.wrongGuesses);
+
+
+        SDL_Color textColor = {255, 0, 0};
         graphics.renderText("Word: " + game.guessedWord, 100, 100, textColor);
+        graphics.renderText("Wrong guesses: " + to_string(game.wrongGuesses), 100, 150, textColor);
 
-
-        graphics.renderText("Wrong guesses: " + std::to_string(game.wrongGuesses), 100, 150, textColor);
-
-
-        std::string guessedLetters(game.guessedLetters.begin(), game.guessedLetters.end());
+        string guessedLetters(game.guessedLetters.begin(), game.guessedLetters.end());
         graphics.renderText("Guessed letters: " + guessedLetters, 100, 200, textColor);
 
 
@@ -47,9 +49,9 @@ int main(int argc, char* argv[]) {
             } else {
                 graphics.renderText("You lose! The word was: " + game.secretWord, 100, 250, textColor);
             }
-             SDL_RenderPresent(graphics.renderer);
-        SDL_Delay(5000);  
-        quit = true;      
+            SDL_RenderPresent(graphics.renderer);
+            SDL_Delay(3000);
+            quit = true;
         }
 
         SDL_RenderPresent(graphics.renderer);
