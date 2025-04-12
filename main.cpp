@@ -1,63 +1,63 @@
-#include "graphics.h"
-#include "logic.h"
+#include "Dohoa.h"
+#include "game.h"
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    Graphics graphics;
-    graphics.init();
-    graphics.loadHangmanStages();
+    DoHoa graphic;
+    graphic.init();
+    graphic.TaiHoatAnh();
 
-    Hangman game;
-    game.init();
+    Hangman troChoi;
+    troChoi.hangman();
 
     SDL_Event event;
-    bool quit = false;
+    bool thoat = false;
 
-    while (!quit && !game.isGameOver()) {
+    while (!thoat && !troChoi.isGameOver()) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
-                quit = true;
+                thoat = true;
             }
 
             if (event.type == SDL_KEYDOWN) {
-                char letter = event.key.keysym.sym;
-                if (letter >= 'a' && letter <= 'z') letter -= 32;
-                if (letter >= 'A' && letter <= 'Z') {
-                    game.guessLetter(letter);
+                char ChuCai = event.key.keysym.sym;
+                if (ChuCai >= 'a' && ChuCai <= 'z') ChuCai -= 32;
+                if (ChuCai >= 'A' && ChuCai <= 'Z') {
+                    troChoi.DoanChuCai(ChuCai);
                 }
             }
         }
 
-        SDL_SetRenderDrawColor(graphics.renderer, 255, 255, 255, 255);
-        SDL_RenderClear(graphics.renderer);
+        SDL_SetRenderDrawColor(graphic.renderer, 255, 255, 255, 255);
+        SDL_RenderClear(graphic.renderer);
 
 
-        graphics.renderHangman(game.wrongGuesses);
+        graphic.HienThiHoatAnh(troChoi.soLanDoanSai);
 
 
-        SDL_Color textColor = {255, 0, 0};
-        graphics.renderText("Word: " + game.guessedWord, 100, 100, textColor);
-        graphics.renderText("Wrong guesses: " + to_string(game.wrongGuesses), 100, 150, textColor);
+        SDL_Color b = {255, 0, 0};
+        graphic.VeChuCai("Word: " + troChoi.tuDaDoan, 100, 100, b);
+        graphic.VeChuCai("So Lan Doan Sai: " + to_string(troChoi.soLanDoanSai), 100, 150, b);
 
-        string guessedLetters(game.guessedLetters.begin(), game.guessedLetters.end());
-        graphics.renderText("Guessed letters: " + guessedLetters, 100, 200, textColor);
+        string ChuCaiDaDoan(troChoi.ChuCaiDaDoan.begin(), troChoi.ChuCaiDaDoan.end());
+        graphic.VeChuCai("Tu Da Doan: " + ChuCaiDaDoan, 100, 200, b);
 
 
-        if (game.isGameOver()) {
-            if (game.guessedWord == game.secretWord) {
-                graphics.renderText("You win!", 100, 250, textColor);
+        if (troChoi.isGameOver()) {
+            if (troChoi.tuDaDoan == troChoi.Tucandoan) {
+                graphic.VeChuCai("Ban Thang!", 100, 250, b);
             } else {
-                graphics.renderText("You lose! The word was: " + game.secretWord, 100, 250, textColor);
+                graphic.VeChuCai("Ban Da Thua! Tu Chinh Xac La: " + troChoi.Tucandoan, 100, 250, b);
             }
-            SDL_RenderPresent(graphics.renderer);
+            SDL_RenderPresent(graphic.renderer);
             SDL_Delay(3000);
-            quit = true;
+            thoat = true;
         }
 
-        SDL_RenderPresent(graphics.renderer);
+        SDL_RenderPresent(graphic.renderer);
         SDL_Delay(10);
     }
 
-    graphics.quit();
+    graphic.quit();
     return 0;
 }
